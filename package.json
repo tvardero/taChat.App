@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.1.1",
+    "jquery": "^3.6.0",
+    "jquery-validation": "^1.19.3",
+    "jquery-validation-unobtrusive": "^3.2.12"
+  },
+  "name": "tachat",
+  "version": "1.0.0",
+  "main": "Program.cs",
+  "repository": "https://github.com/tvardero/taChat.git",
+  "author": "Vardo Ternos <tvardero@gmail.com>",
+  "license": "MIT"
+}
