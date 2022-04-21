@@ -1,6 +1,19 @@
+global using taChat.App.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using taChat.App.Repository;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpsRedirection(o => o.HttpsPort = 3001);
+
+builder.Services.AddDbContext<ApplicationDbContext>(o => o.UseSqlite(
+    builder.Configuration.GetConnectionString("data")
+));
+
+builder.Services.AddIdentity<User, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddMvc();
 
