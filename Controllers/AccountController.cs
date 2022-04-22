@@ -10,7 +10,10 @@ public class AccountController : Controller
         _signInManager = signInManager;
     }
 
-    public IActionResult Login() => View();
+    public IActionResult Login()
+    {
+        return HttpContext.User.Identity?.Name == null ? View() : Redirect("/");
+    }
 
     [HttpPost]
     public async Task<IActionResult> Login(AccountViewModel model)

@@ -11,21 +11,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="~/css/site.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="~/lib/@@fortawesome/fontawesome-free/css/all.min.css">
 
-    <!-- Roboto font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    @* <!-- Roboto font -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> *@
 
 </head>
 
-<body>
+<body class="vh-100 d-flex flex-column">
 
-    @RenderBody()
+    @* Navbar *@
+    <div class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a href="/" class="navbar-brand">taChat</a>
+        </div>
+    </div>
+
+    <div class="flex-grow-1" style="height:1%">
+        @RenderBody()
+    </div>
 
     <script src="~/js/site.js"></script>
-
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     @RenderSection("Scripts", false)
 
 </body>
