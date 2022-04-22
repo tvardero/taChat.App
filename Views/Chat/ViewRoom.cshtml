@@ -1,17 +1,22 @@
 @model RoomViewModel
 
-<div class="chat">
-    <div class="chat-messages">
-        @foreach (Message message in Model.Room.Messages)
-        {
-            @* Todo: if user is you - ommit sender field and add css class "message-my" *@
-            <div class="message">
-                <span class="message-sender">@message.Sender.UserName</span>
-                <span class="message-text">@message.Text</span>
-                <span class="message-timestamp">@message.Timestamp.ToShortTimeString()</span>
-            </div>
-        }
-    </div>
 
-    @await Html.PartialAsync( "_MessageInputForm", new Message() { RoomId = @Model.Room.Id, SenderId = @Model.UserId })
+
+<div class="chat">
+    @if (Model.Room != null)
+    {
+        <div class="chat-messages">
+            @foreach (Message message in Model.Room.Messages)
+            {
+                @* Todo: if user is you - ommit sender field and add css class "message-my" *@
+                <div class="message">
+                    <span class="message-sender">@message.Sender.UserName</span>
+                    <span class="message-text">@message.Text</span>
+                    <span class="message-timestamp">@message.Timestamp.ToShortTimeString()</span>
+                </div>
+            }
+        </div>
+
+        @await Html.PartialAsync( "_MessageInputForm", new Message() { RoomId = @Model.Room.Id, SenderId = @Model.UserId })
+    }
 </div>

@@ -1,16 +1,17 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace taChat.App.Controllers;
 
-// [Authorize]
+[Authorize]
 public class ChatController : Controller
 {
-    public ChatController(ApplicationDbContext context)
+    public ChatController(ApplicationDbContext context, UserManager<User> userManager)
     {
         _context = context;
+        _userManager = userManager;
     }
 
     [HttpPost]
@@ -28,14 +29,21 @@ public class ChatController : Controller
         return Redirect("/");
     }
 
-    public async Task<IActionResult> ViewRoom(ulong roomId)
+    public async Task<IActionResult> ViewRoom(ulong roomId = 0)
     {
-        var loadedRooms = _context.Rooms
+        Room? room = await _context.Rooms
             .Include(r => r.Messages)
-            .ThenInclude(m => m.Sender);
+            .ThenInclude(m => m.Sender)
+            .SingleOrDefaultAsync(r => r.Id == roomId);
 
-        Room room = loadedRooms.SingleOrDefault(r => r.Id == roomId) ?? loadedRooms.First();
-        User user = await _context.Users.FirstOrDefaultAsync() ?? new() { UserName = "Hanna" };
+        User user = await _userManager.GetUserAsync(HttpContext.User);
+
+        if (user == null)
+        {
+            user = new() { UserName = "DevTest" };
+            _context.Users.Add(user);
+            _context.SaveChanges();
+        }
 
         RoomViewModel model = new() { Room = room, UserId = user.Id };
         return View(model);
@@ -44,6 +52,9 @@ public class ChatController : Controller
     [HttpPost]
     public async Task<IActionResult> SendMessage(Message message)
     {
+        ModelState!.Remove(nameof(Message.Room));
+        ModelState!.Remove(nameof(Message.Sender));
+
         if (ModelState.IsValid)
         {
             message.Timestamp = DateTime.UtcNow;
@@ -56,4 +67,5 @@ public class ChatController : Controller
     }
 
     private readonly ApplicationDbContext _context;
+    private readonly UserManager<User> _userManager;
 }

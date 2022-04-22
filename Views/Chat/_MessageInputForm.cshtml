@@ -1,10 +1,10 @@
 @model Message
 
 <form class="chat-input" method="post">
-    <textarea asp-for="Text" rows="1"></textarea>
+    <textarea asp-for="Text" id="chat-input-textarea" placeholder="Write text here..." rows="1"></textarea>
     <input asp-for="RoomId" />
-    <button asp-action="@nameof(ChatController.SendMessage)" asp-controller="@nameof(ChatController)" type="submit"
-            class="cursor-pointer">
+    <input asp-for="SenderId" />
+    <button asp-action="SendMessage" asp-controller="Chat" type="submit" class="cursor-pointer">
         <i class="fa-solid fa-paper-plane"></i>
     </button>
 </form>

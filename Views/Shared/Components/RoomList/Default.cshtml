@@ -14,7 +14,7 @@
         }
         else
         {
-            <a asp-action="nameof(ChatController.ViewRoom)" asp-controller="nameof(ChatController)" asp-route-roomId="@room.Id" class="rooms-button">@room.Name</a>
+            <a asp-action="ViewRoom" asp-controller="Chat" asp-route-roomId="@room.Id" class="rooms-button">@room.Name</a>
         }
     }
 </div>
