@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="~/css/site.css">
     <link rel="stylesheet" href="~/lib/@@fortawesome/fontawesome-free/css/all.min.css">
 
+    <!-- Roboto font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
@@ -23,20 +24,30 @@
 
     <nav class="navbar">
         <a href="/">taChat</a>
+        <a id="create-room-btn" class="cursor-pointer">New room</a>
     </nav>
 
     <main class="main">
-        <div class="rooms">
-            <a href="#" class="rooms-button">Button</a>
-            <a href="#" class="rooms-button">Button</a>
-            <a href="#" class="rooms-button">Button</a>
-            <a href="#" class="rooms-button">Button</a>
-            <a href="#" class="rooms-button">Button</a>
-            <a href="#" class="rooms-button">+</a>
-        </div>
+        @(await Component.InvokeAsync<ChatListViewComponent>())
 
         @RenderBody()
     </main>
+
+    <div id="create-room-modal" class="modal">
+        <form asp-action="@nameof(ChatController.CreateRoom)" asp-controller="@nameof(ChatController)"
+              class="modal-body" method="post">
+            <span class="modal-title">Create room</span>
+            <input name="name" type="text" class="modal-input" />
+            <span class="modal-actions">
+                <button type="submit">Create</button>
+                <button type="button" onclick="closeModal()">Cancel</button>
+            </span>
+        </form>
+    </div>
+
+    <script src="~/js/site.js"></script>
+
+    @RenderSection("Scripts", false)
 
 </body>
 

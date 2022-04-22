@@ -1,7 +1,10 @@
+global using taChat.App.Controllers;
 global using taChat.App.Models;
+global using taChat.App.Models.ViewModels;
+global using taChat.App.Repository;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using taChat.App.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +14,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(o => o.UseSqlite(
     builder.Configuration.GetConnectionString("data")
 ));
 
-builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole>(o =>
+    {
+        o.Password.RequireNonAlphanumeric = false;
+        o.Password.RequireUppercase = false;
+        o.Password.RequireDigit = false;
+        o.Password.RequiredLength = 6;
+    })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
@@ -28,6 +37,8 @@ if (app.Environment.IsDevelopment())
     app.UseStatusCodePages();
     app.UseDeveloperExceptionPage();
 }
+
+app.UseAuthentication();
 
 app.MapControllerRoute(
     name: null!,
