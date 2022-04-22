@@ -87,7 +87,7 @@ main {
 
 .chat-messages {
     flex-grow: 1;
-    margin: 0.5rem;
+    margin: 0 0.5rem;
     overflow-y: auto;
 
     display: flex;
@@ -96,7 +96,7 @@ main {
 
 .chat-input {
     background-color: #17212B;
-    padding: 0.25rem;
+    padding: 0.5rem;
 
     display: flex;
     flex-direction: row;
@@ -112,6 +112,7 @@ main {
     font-size: inherit;
     font-family: inherit;
     color: inherit;
+    overflow-y: hidden;
 }
 
 .chat-input>textarea:focus {
@@ -159,6 +160,8 @@ main {
 
 .message-text {
     padding: 0.25rem 0;
+    flex-wrap: wrap;
+    word-wrap: break-word;
 }
 
 .message-timestamp {

@@ -34,16 +34,26 @@ app.UseHttpsRedirection();
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseHttpLogging();
     app.UseStatusCodePages();
     app.UseDeveloperExceptionPage();
 }
 
+app.UseRouting();
+
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: null!,
-    pattern: $"{{action={nameof(ChatController.ViewRoom)}}}",
-    defaults: new { controller = nameof(ChatController) }
+    pattern: "{action=ViewRoom}",
+    defaults: new { controller = "Chat" }
+);
+
+app.MapControllerRoute
+(
+    name: null!,
+    pattern: "{controller}/{action}"
 );
 
 app.Run();
