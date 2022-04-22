@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace taChat.App.Controllers;
 
-[Authorize]
+// [Authorize]
 public class ChatController : Controller
 {
     public ChatController(ApplicationDbContext context)

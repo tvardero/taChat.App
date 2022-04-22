@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace taChat.App.Models;
 
 public class Room
@@ -14,7 +16,9 @@ public class Room
 
     public ICollection<User> Users { get; init; } = new HashSet<User>();
 
+    [Required, MaxLength(50)]
     public string Name { get; set; } = null!;
 
+    [Required]
     public RoomType Type { get; init; }
 }
