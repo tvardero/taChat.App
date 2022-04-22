@@ -6,5 +6,5 @@ public class User : IdentityUser
 {
     public ICollection<Message> Messages { get; } = new HashSet<Message>();
 
-    public ICollection<Chat> Chats { get; } = new HashSet<Chat>();
+    public ICollection<Room> Chats { get; } = new HashSet<Room>();
 }

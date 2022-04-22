@@ -1,8 +1,8 @@
 namespace taChat.App.Models;
 
-public class Chat
+public class Room
 {
-    public enum ChatType
+    public enum RoomType
     {
         Private,
         Group
@@ -14,5 +14,7 @@ public class Chat
 
     public ICollection<User> Users { get; init; } = new HashSet<User>();
 
-    public ChatType Type { get; init; }
+    public string Name { get; set; } = null!;
+
+    public RoomType Type { get; init; }
 }

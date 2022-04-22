@@ -42,7 +42,8 @@ app.UseAuthentication();
 
 app.MapControllerRoute(
     name: null!,
-    pattern: "{controller=Home}/{action=Index}"
+    pattern: $"{{action={nameof(ChatController.ViewRoom)}}}",
+    defaults: new { controller = nameof(ChatController) }
 );
 
 app.Run();

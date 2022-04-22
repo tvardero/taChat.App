@@ -1,0 +1,20 @@
+@model IEnumerable<Room>
+
+@{
+    uint currentRoomId = 0;
+    uint.TryParse(Context.Request.Query["roomId"], out currentRoomId);
+}
+
+<div class="rooms">
+    @foreach (Room room in Model)
+    {
+        if (currentRoomId == room.Id)
+        {
+            <a class="rooms-button current">@room.Name</a>
+        }
+        else
+        {
+            <a asp-action="nameof(ChatController.ViewRoom)" asp-controller="nameof(ChatController)" asp-route-roomId="@room.Id" class="rooms-button">@room.Name</a>
+        }
+    }
+</div>

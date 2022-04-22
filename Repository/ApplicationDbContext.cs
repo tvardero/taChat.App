@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,7 +5,7 @@ namespace taChat.App.Repository;
 
 public class ApplicationDbContext : IdentityDbContext<User>
 {
-    public DbSet<Chat> Chats { get; init; } = null!;
+    public DbSet<Room> Rooms { get; init; } = null!;
 
     public DbSet<Message> Messages { get; init; } = null!;
 
@@ -16,11 +15,11 @@ public class ApplicationDbContext : IdentityDbContext<User>
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<Chat>()
-            .HasMany(c => c.Messages)
-            .WithOne(m => m.Chat);
+        builder.Entity<Room>()
+            .HasMany(r => r.Messages)
+            .WithOne(m => m.Room);
 
-        builder.Entity<Chat>()
+        builder.Entity<Room>()
             .HasMany(c => c.Users)
             .WithMany(u => u.Chats);
 
