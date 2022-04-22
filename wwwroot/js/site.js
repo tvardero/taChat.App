@@ -1,25 +1,12 @@
-// Create new room modal
-var createRoomButton = document.getElementById("create-room-btn");
-var createRoomModal = document.getElementById("create-room-modal");
-createRoomButton.addEventListener("click", openModal);
-
-function openModal() {
-    createRoomModal.classList.add("active");
-}
-
-function closeModal() {
-    createRoomModal.classList.remove("active");
-}
+var chatInputForm = document.getElementById("chat-input-form");
+var chatInputTextarea = document.getElementById("chat-input-textarea");
 
 // Textarea - expand vertically on text input, max 5 lines
-var chatInputTextarea = document.getElementById("chat-input-textarea");
-chatInputTextarea.addEventListener("input", updateChatInputTextareaHeight, false);
-
-function updateChatInputTextareaHeight() {
+chatInputTextarea.addEventListener("input", function () {
     this.style.height = "auto";
     this.style.height = Math.min(this.scrollHeight, 100) + "px";
-}
+});
 
 // On page load - scoll down automatically
-var chatMessages = document.getElementsByClassName("chat-messages")[0];
+var chatMessages = document.getElementById("chat-messages");
 chatMessages.scrollTop = chatMessages.scrollHeight;

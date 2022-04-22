@@ -1,262 +1,34 @@
-body {
-    margin: 0;
-    height: 100vh;
-
-    display: flex;
-    flex-direction: column;
-
-    color: white;
-    font-family: 'Roboto', sans-serif;
-}
-
-nav {
-    padding: 1rem;
-
-    background-color: #17212B;
-    border: 1px solid #000;
-
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-
-    font-size: larger;
-    gap: 4rem;
-}
-
-nav>a {
-    color: white;
-    text-decoration: none;
-}
-
-main {
-    flex-grow: 1;
-    height: 1%;
-    /* Лол как эта штука вообще работает, не пойму: height: 1% */
-
-    display: flex;
-    flex-direction: row;
-}
-
-.rooms {
-    background-color: #17212B;
-
-    display: flex;
-    flex-direction: column;
-}
-
-.rooms-button {
-    padding: 0.25rem;
-    margin: 0.5rem 0.5rem 0 0.5rem;
-    height: 40px;
-    width: 150px;
-
-    background-color: rgb(23, 36, 54);
-    border: 1px solid #000;
-    border-radius: 0.5rem;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    text-decoration: none;
-    text-align: center;
-    color: inherit;
-}
-
-.rooms-button:hover {
-    background-color: rgb(33, 51, 77);
-}
-
-.rooms-button:focus {
-    background-color: rgb(33, 51, 77);
-}
-
-.rooms-button.current {
-    background-color: rgb(33, 51, 77);
-}
-
-.chat {
-    flex-grow: 1;
-    max-height: 100%;
-
-    background-color: #0E1621;
-
-    display: flex;
-    flex-direction: column;
-}
-
-.chat-messages {
-    flex-grow: 1;
-    margin: 0 0.5rem;
-    overflow-y: auto;
-
-    display: flex;
-    flex-direction: column;
-}
-
-.chat-input {
-    background-color: #17212B;
-    padding: 0.5rem;
-
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-
-.chat-input>textarea {
-    flex-grow: 1;
-
-    resize: none;
-    border: none;
-    background: none;
-    font-size: inherit;
-    font-family: inherit;
-    color: inherit;
-    overflow-y: hidden;
-}
-
-.chat-input>textarea:focus {
-    outline: none;
-}
-
-.chat-input>button {
-    min-width: 50px;
-    min-height: 50px;
-    align-self: flex-end;
-
-    border: none;
-    background: none;
-    outline: inherit;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-size: x-large;
-    color: #6BBFFF;
-}
-
 .message {
     max-width: 500px;
-    padding: 0.25rem 0.5rem;
-    margin-bottom: 0.5rem;
-
-    background-color: #182533;
+    padding: 0.5rem;
     border: 1px solid rgb(0, 0, 0, .125);
     border-radius: 0.5rem;
-
-    display: flex;
-    flex-direction: column;
 }
 
 .message:first-child {
     margin-top: auto;
 }
 
-.message-sender {
-    font-weight: bold;
-    color: #6BBFFF;
-}
-
-.message-text {
-    padding: 0.25rem 0;
-    flex-wrap: wrap;
-    word-wrap: break-word;
-}
-
-.message-timestamp {
-    font-size: small;
-    text-align: end;
-    color: #6BBFFF;
-}
-
 .message-my {
-    background-color: #2B5278;
-    margin-left: auto;
+    background-color: #0b5361;
 }
 
-.modal {
-    display: none;
-    position: fixed;
-    min-height: 100vh;
-    min-width: 100vw;
-    z-index: 100;
-    top: 0;
-    left: 0;
-
-    background-color: rgba(0, 0, 0, 0.75);
+#chat-input-textarea {
+    border: none !important;
+    resize: none;
+    overflow-y: hidden;
 }
 
-.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.scrollbar::-webkit-scrollbar {
+    width: 8px;
 }
 
-.modal-body {
-    min-width: 300px;
-    padding: 1rem;
-
-    background-color: #17212B;
-    border-radius: 0.5rem;
-
-    display: flex;
-    flex-direction: column;
+.scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #118096;
 }
 
-.modal-title {
-    margin-bottom: 0.5rem;
-    font-weight: bold;
-    text-align: center;
-}
-
-.modal-text {
-    margin-bottom: 0.5rem;
-}
-
-.modal-input {
-    margin-bottom: 0.5rem;
-    height: 1.25rem;
-
-    background-color: inherit;
-    outline: auto;
-    color: inherit;
-
-}
-
-.modal-actions {
-    text-align: center;
-    display: flex;
-    flex-direction: row;
-
-    justify-content: space-around;
-}
-
-.modal-actions>button {
-    padding: 0.25rem;
-    margin: 0;
-    width: 60px;
-
-    background-color: rgb(23, 36, 54);
-    border: 1px solid #000;
-    border-radius: 0.5rem;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    text-decoration: none;
-    color: inherit;
-}
-
-.modal-actions>button:hover {
-    background-color: rgb(33, 51, 77);
-}
-
-.modal-actions>button:focus {
-    background-color: rgb(33, 51, 77);
-}
-
-.cursor-pointer {
-    cursor: pointer;
+.scrollbar::-webkit-scrollbar-track {
+    border-radius: 10px;
+    margin: 10px 10px;
 }

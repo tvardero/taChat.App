@@ -4,5 +4,5 @@ public class RoomViewModel
 {
     public Room? Room { get; init; } = null!;
 
-    public string UserId { get; init; } = null!;
+    public string CurrentUserId { get; init; } = null!;
 }
