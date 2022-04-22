@@ -45,7 +45,7 @@ public class ChatController : Controller
             _context.SaveChanges();
         }
 
-        RoomViewModel model = new() { Room = room, UserId = user.Id };
+        RoomViewModel model = new() { Room = room, CurrentUserId = user.Id };
         return View(model);
     }
 

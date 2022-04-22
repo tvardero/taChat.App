@@ -1,22 +1,33 @@
 @model RoomViewModel
 
-
-
-<div class="chat">
+<div class="flex-grow-1 bg-dark d-flex flex-column" style="--bs-bg-opacity: .95;max-height:100%">
     @if (Model.Room != null)
     {
-        <div class="chat-messages">
+        <div id="chat-messages" class="mx-2 flex-grow-1 d-flex flex-column align-items-start gap-2 overflow-auto scrollbar">
             @foreach (Message message in Model.Room.Messages)
             {
-                @* Todo: if user is you - ommit sender field and add css class "message-my" *@
-                <div class="message">
-                    <span class="message-sender">@message.Sender.UserName</span>
-                    <span class="message-text">@message.Text</span>
-                    <span class="message-timestamp">@message.Timestamp.ToShortTimeString()</span>
-                </div>
+                @if (message.SenderId == Model.CurrentUserId)
+                {
+                    <div class="message message-my align-self-end d-flex flex-column text-white" style="max-width:600px">
+                        <span class="text-break">@message.Text</span>
+                        <span class="text-info align-self-end"
+                  style="--bs-text-opacity: .5;font-size:small">@message.Timestamp.ToShortTimeString()</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="message d-flex flex-column bg-dark text-white" style="max-width:600px">
+                        <span class="text-info fw-bold" style="--bs-text-opacity: .75;">@message.Sender.UserName</span>
+                        <span class="text-break">@message.Text</span>
+                        <span class="text-info align-self-end"
+                  style="--bs-text-opacity: .5;font-size:small">@message.Timestamp.ToShortTimeString()</span>
+                    </div>
+                }
             }
         </div>
 
-        @await Html.PartialAsync( "_MessageInputForm", new Message() { RoomId = @Model.Room.Id, SenderId = @Model.UserId })
+        @await Html.PartialAsync( "_MessageInputForm", new Message() { RoomId = @Model.Room.Id, SenderId =
+    @Model.CurrentUserId
+    })
     }
 </div>
