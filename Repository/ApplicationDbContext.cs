@@ -9,22 +9,23 @@ public class ApplicationDbContext : IdentityDbContext<User>
 
     public DbSet<Message> Messages { get; init; } = null!;
 
+    public DbSet<RoomUser> RoomUsers { get; init; } = null!;
+
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<Room>()
-            .HasMany(r => r.Messages)
-            .WithOne(m => m.Room);
+        var room = builder.Entity<Room>();
+        room.HasMany(r => r.Messages).WithOne(m => m.Room);
+        room.HasMany(r => r.Users).WithOne(ru => ru.Room);
 
-        builder.Entity<Room>()
-            .HasMany(c => c.Users)
-            .WithMany(u => u.Chats);
+        var user = builder.Entity<User>();
+        user.HasMany(u => u.Messages).WithOne(m => m.Sender);
+        user.HasMany(u => u.Chats).WithOne(ru => ru.User);
 
-        builder.Entity<User>()
-            .HasMany(u => u.Messages)
-            .WithOne(m => m.Sender);
+        var roomuser = builder.Entity<RoomUser>();
+        roomuser.HasKey(ru => new { ru.RoomId, ru.UserId });
     }
 }

@@ -1,24 +1,20 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace taChat.App.Models;
 
 public class Room
 {
-    public enum RoomType
-    {
-        Private,
-        Group
-    }
-
     public ulong Id { get; init; }
 
     public ICollection<Message> Messages { get; } = new HashSet<Message>();
 
-    public ICollection<User> Users { get; init; } = new HashSet<User>();
+    public ICollection<RoomUser> Users { get; init; } = new HashSet<RoomUser>();
 
-    [Required, MaxLength(50)]
+    [Required, MaxLength(30)]
     public string Name { get; set; } = null!;
 
-    [Required]
-    public RoomType Type { get; init; }
+    public bool IsGroup { get; set; }
+
+    public RoomPerks NewUserPerks { get; set; } = RoomPerks.Default;
 }

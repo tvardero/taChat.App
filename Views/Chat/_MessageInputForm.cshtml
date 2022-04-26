@@ -1,10 +1,9 @@
-@model Message
+@model ulong
 
 <form method="post" id="chat-input-form" class="m-2 pt-3 d-flex flex-row align-items-center gap-2">
-    <textarea asp-for="Text" id="chat-input-textarea" placeholder="Write text here..." rows="1"
+    <textarea name="text" id="chat-input-textarea" placeholder="Write text here..." rows="1"
               class="flex-grow-1 form-control bg-dark text-white"></textarea>
-    <input asp-for="RoomId" />
-    <input asp-for="SenderId" />
+    <input hidden name="roomId" value="@Model" />
     <button asp-action="SendMessage" asp-controller="Chat" type="submit"
             class="align-self-end fs-3 text-info btn btn-link" style="--bs-text-opacity: .75;min-height:52px">
         <i class="fa-solid fa-paper-plane"></i>

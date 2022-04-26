@@ -1,0 +1,100 @@
+@model IEnumerable<(string name, ulong id)>
+
+@{
+	ulong currentRoomId = 0;
+	ulong.TryParse(Context.Request.Query["roomId"], out currentRoomId);
+}
+
+<div class="bg-dark d-flex flex-column" style="min-width:150px">
+	<div class="m-2 flex-grow-1 d-flex flex-column gap-2 overflow-auto scrollbar">
+		@foreach (var room in Model)
+		{
+			if (currentRoomId == room.id)
+			{
+				<a class="btn btn-light">@room.name</a>
+			}
+			else
+			{
+				<a asp-action="ViewRoom" asp-controller="Chat" asp-route-roomId="@room.id"
+		   class="btn btn-outline-light">@room.name</a>
+			}
+		}
+	</div>
+
+	<div class="mx-2 mb-2 d-flex flex-column justify-content-center" style="min-height:52px">
+		<button type="button" data-bs-toggle="modal" data-bs-target="#new-chat-modal" id="new-chat-button"
+				class="btn btn-outline-success">
+			New room
+		</button>
+	</div>
+</div>
+
+<div id="new-chat-modal" tabindex="-1" class="modal fade">
+	<div class="modal-dialog modal-dialog-centered">
+		<div method="post" class="modal-content bg-dark text-white">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">New chat</h5>
+				<button type="button" class="btn btn-outline-danger text-center btn-sm" data-bs-dismiss="modal">
+					<i class="fa-solid fa-xmark"></i>
+				</button>
+			</div>
+			<div id="accordion" class="accordion">
+
+				<div class="accordion-item bg-dark text-white">
+
+					<h2 class="accordion-header">
+						<button class="accordion-button bg-dark text-white" type="button" data-bs-toggle="collapse"
+								data-bs-target="#collapseOne">
+							Private chat
+						</button>
+					</h2>
+
+					<div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordion">
+						<form autocomplete="off"
+							  class="accordion-body d-flex flex-row gap-2 text-nowrap align-items-baseline"
+							  method="post" asp-controller="Chat">
+							<label>With this person:</label>
+							<input name="name" type="text" maxlength="30" class="form-control bg-dark text-white" />
+							<input name="isGroup" hidden value="false" />
+							<button type="submin" class="btn btn-outline-success"
+									asp-action="CreateRoom">Create</button>
+						</form>
+					</div>
+
+				</div>
+
+				<div class="accordion-item bg-dark text-white">
+					<h2 class="accordion-header">
+						<button class="accordion-button bg-dark text-white collapsed" type="button"
+								data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+							Group chat
+						</button>
+					</h2>
+					<div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordion">
+						<form autocomplete="off"
+							  class="accordion-body d-flex flex-row gap-2 text-nowrap align-items-baseline"
+							  method="post" asp-controller="Chat">
+							<label>New chat name:</label>
+							<input name="name" type="text" maxlength="30" class="form-control bg-dark text-white" />
+							<input name="isGroup" hidden value="true" />
+							<button type="submin" class="btn btn-outline-success"
+									asp-action="CreateRoom">Create</button>
+						</form>
+					</div>
+				</div>
+			</div>
+
+
+			@* Select - group / private *@
+
+			@* If private - select user *@
+			@* If group - select chat name *@
+
+			@* <input name=" name" type="text" class="form-control bg-dark text-white" />
+				<div class="d-flex flex-row justify-content-center">
+				<button asp-action="CreateRoom" asp-controller="Chat" type="submit"
+				class="btn btn-outline-primary">Create</button>
+				</div> *@
+		</div>
+	</div>
+</div>
