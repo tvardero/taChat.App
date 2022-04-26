@@ -24,4 +24,6 @@ public class Message
     public string Text { get; set; } = null!;
 
     public DateTime Timestamp { get; set; }
+
+    public bool WasEdited { get; set; }
 }

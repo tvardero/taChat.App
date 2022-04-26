@@ -13,6 +13,14 @@
     background-color: #0b5361;
 }
 
+.message:hover>.show-on-hover {
+    display: block !important;
+}
+
+.show-on-hover {
+    display: none !important;
+}
+
 #chat-input-textarea {
     border: none !important;
     resize: none;

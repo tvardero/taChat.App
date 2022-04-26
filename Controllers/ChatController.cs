@@ -125,22 +125,46 @@ public class ChatController : Controller
         return RedirectToAction(nameof(ViewRoom), new { roomId });
     }
 
-    [HttpPost]
-    public IActionResult EditMessage(string text, ulong messageId)
+    [HttpGet]
+    public async Task<IActionResult> EditMessage(ulong messageId, ulong roomId)
     {
-        throw new System.NotImplementedException();
+        Message? message = await _context.Messages.SingleOrDefaultAsync(m => m.Id == messageId);
+
+        if (message != null)
+        {
+            TempData["edit"] = true;
+            TempData["editMessageId"] = messageId.ToString();
+            TempData["editMessageText"] = message.Text;
+        }
+
+        return RedirectToAction(nameof(ViewRoom), new { roomId });
     }
 
     [HttpPost]
-    public IActionResult DeleteMyMessage(ulong messageId)
+    public async Task<IActionResult> EditMessage(string text, ulong messageId, ulong roomId)
     {
-        throw new System.NotImplementedException();
+        Message? message = await _context.Messages.SingleOrDefaultAsync(m => m.Id == messageId);
+        if (message != null && text != null)
+        {
+            message.Text = text;
+            message.Timestamp = DateTime.Now;
+            message.WasEdited = true;
+
+            await _context.SaveChangesAsync();
+        }
+        return RedirectToAction(nameof(ViewRoom), new { roomId });
     }
 
     [HttpPost]
-    public IActionResult DeleteSomeonesMessage(ulong messageId)
+    public async Task<IActionResult> DeleteMessage(ulong messageId, ulong roomId)
     {
-        throw new System.NotImplementedException();
+        Message? message = await _context.Messages.SingleOrDefaultAsync(m => m.Id == messageId);
+        if (message != null)
+        {
+            _context.Messages.Remove(message);
+            await _context.SaveChangesAsync();
+        }
+        return RedirectToAction(nameof(ViewRoom), new { roomId });
     }
 
     [HttpGet]
