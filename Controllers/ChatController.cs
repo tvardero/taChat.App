@@ -105,7 +105,7 @@ public class ChatController : Controller
             {
                 Message message = new()
                 {
-                    Timestamp = DateTime.UtcNow,
+                    Timestamp = DateTime.Now,
                     SenderId = (await GetCurrentUserAsync()).Id,
                     RoomId = roomId,
                     Text = text
