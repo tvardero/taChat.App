@@ -1,12 +1,17 @@
 @model RoomViewModel
 
+@{
+    bool canRead = (Model.Perks & RoomPerks.Read) == RoomPerks.Read;
+    bool canWrite = (Model.Perks & RoomPerks.Write) == RoomPerks.Write;
+}
+
 <div class="flex-grow-1 bg-dark d-flex flex-column" style="--bs-bg-opacity: .95;max-height:100%">
     @if (Model.Room != null)
     {
         <div id="chat-messages" class="mx-2 flex-grow-1 d-flex flex-column align-items-start gap-2 overflow-auto scrollbar">
             @foreach (Message message in Model.Room.Messages)
             {
-                @if (message.SenderId == Model.CurrentUserId)
+                @if (message.SenderId == @Model.CurrentUserId)
                 {
                     <div class="message message-my align-self-end d-flex flex-column text-white" style="max-width:600px">
                         <span class="text-break">@message.Text</span>
@@ -14,7 +19,7 @@
                   style="--bs-text-opacity: .5;font-size:small">@message.Timestamp.ToShortTimeString()</span>
                     </div>
                 }
-                else
+                else if (canRead)
                 {
                     <div class="message d-flex flex-column bg-dark text-white" style="max-width:600px">
                         <span class="text-info fw-bold" style="--bs-text-opacity: .75;">@message.Sender.UserName</span>
@@ -26,8 +31,10 @@
             }
         </div>
 
-        @await Html.PartialAsync( "_MessageInputForm", new Message() { RoomId = @Model.Room.Id, SenderId =
-    @Model.CurrentUserId
-    })
+        if (canWrite)
+        {
+            @await Html.PartialAsync("_MessageInputForm", model: @Model.Room.Id )
+            ;
+        }
     }
 </div>

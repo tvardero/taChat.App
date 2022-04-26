@@ -1,0 +1,126 @@
+@model RoomViewModel
+
+@{
+	bool HasPerk(RoomPerks perk) => (Model.Perks & perk) == perk;
+}
+<div class="flex-grow-1 bg-dark d-flex flex-column align-items-center" style="--bs-bg-opacity: .95;max-height:100%">
+	<div class="m-3 my-5 w-100 d-flex flex-column gap-4" style="max-width:800px">
+		@if (Model.Room != null)
+		{
+			@* Change room name - if room is group and user has perk*@
+			@if (Model.Room.IsGroup && HasPerk(RoomPerks.ChangeRoomInfo))
+			{
+				<form asp-controller="Chat" asp-action="ChangeRoomInfo" method="post" class="d-flex flex-row text-nowrap gap-1">
+					<input name="roomName" value="@Model.Room.Name" class="form-control bg-dark text-white" style="max-width:300px" />
+					<input hidden name="roomId" value="@Model.Room.Id" />
+					<button type="submit" class="btn btn-outline-warning">Save room name</button>
+				</form>
+			}
+
+			@* Change room new users perks - if room is group and user has perk*@
+			@if (Model.Room.IsGroup && HasPerk(RoomPerks.ChangeAnyPerk))
+			{
+				@* Show perks modal for "new users" perks *@
+			}
+
+			@* Add user - if room is group and user has perk*@
+			@if (Model.Room.IsGroup && HasPerk(RoomPerks.AddUser))
+			{
+				<form asp-controller="Chat" asp-action="AddUser" method="post" class="d-flex flex-row text-nowrap gap-1">
+					<input name="userName" class="form-control bg-dark text-white" style="max-width:300px" />
+					<input hidden name="roomId" value="@Model.Room.Id" />
+					<button type="submit" class="btn btn-outline-success">Add user</button>
+				</form>
+			}
+
+			@* Users table - if room is group *@
+			@if (Model.Room.IsGroup)
+			{
+				<table class="table table-dark table-striped table-hover align-self-center" style="max-width:800px">
+					<thead>
+						<th>Users:</th>
+					</thead>
+					<tbody class="overflow-auto">
+						@foreach (RoomUser roomuser in Model!.Room.Users)
+						{
+							if (roomuser.UserId == Model.CurrentUserId) continue;
+
+							@* Mute / Deafen user - if user has perk*@
+							@* Manage user perks - if user has perk*@
+							@* Remove user from group - if user has perk *@
+
+							<tr>
+								<td class="d-flex flex-row gap-1 align-items-baseline px-3">
+									<span class="flex-grow-1">@roomuser.User.UserName</span>
+									@if (HasPerk(RoomPerks.ChangeReadWritePerk))
+									{
+										bool IsNotMuted = (roomuser.Perks & RoomPerks.Write) == RoomPerks.Write;
+										bool IsNotDeafen = (roomuser.Perks & RoomPerks.Read) == RoomPerks.Read;
+
+										<form asp-controller="Chat" asp-action="Mute" method="post">
+											<input hidden name="roomId" value="@Model.Room.Id" />
+											<input hidden name="userId" value="@roomuser.UserId" />
+											<input hidden name="mute" value="@IsNotMuted.ToString()" />
+											@if (IsNotMuted)
+											{
+												<button type="submit" class="btn btn-outline-success" style="width:60px">
+													<i class="fa-solid fa-comment"></i>
+												</button>
+											}
+											else
+											{
+												<button type="submit" class="btn btn-outline-danger" style="width:60px">
+													<i class="fa-solid fa-comment-slash"></i>
+												</button>
+											}
+										</form>
+										<form asp-controller="Chat" asp-action="Deafen" method="post">
+											<input hidden name="roomId" value="@Model.Room.Id" />
+											<input hidden name="userId" value="@roomuser.UserId" />
+											<input hidden name="deaf" value="@IsNotDeafen.ToString()" />
+											@if (IsNotDeafen)
+											{
+												<button type="submit" class="btn btn-outline-success" style="width:60px"><i
+									 class="fa-solid fa-eye"></i></button>
+											}
+											else
+											{
+												<button type="submit" class="btn btn-outline-danger" style="width:60px"><i
+									 class="fa-solid fa-eye-slash"></i></button>
+											}
+										</form>
+									}
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			}
+
+			<div class="d-flex flex-row gap-1">
+				@* Leave room - if room is group *@
+				@if (Model.Room.IsGroup)
+				{
+					<form asp-controller="Chat" asp-action="LeaveRoom" method="post">
+						<input hidden name="roomId" value="@Model.Room.Id" />
+						<button type="submit" class="btn btn-outline-warning">Leave room</button>
+					</form>
+				}
+
+				@if (HasPerk(RoomPerks.DeleteRoom))
+				{
+					<form asp-controller="Chat" asp-action="DeleteRoom" method="post">
+						<input hidden name="roomId" value="@Model.Room.Id" />
+						<button type="submit" class="btn btn-outline-danger">Delete room</button>
+					</form>
+				}
+			</div>
+
+		}
+	</div>
+</div>
+
+@* modal for perks for user / new users*@
+@* inside modal: Transfer creator perk - if you are creator*@
+
+@* modal for room leave and room deletion *@

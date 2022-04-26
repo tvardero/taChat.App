@@ -25,8 +25,34 @@
 
     @* Navbar *@
     <div class="navbar navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a href="/" class="navbar-brand">taChat</a>
+        <div class="w-100 d-flex flex-row mx-3">
+            <a href="/" class="navbar-brand" style="min-width:120px">taChat</a>
+            <div class="w-100 navbar-nav d-flex flex-row gap-3">
+                @if (ViewData["roomName"] as string != null)
+                {
+                    <div class="nav-item ms-auto">
+                        <span class="nav-link">@ViewData["roomName"]</span>
+                    </div>
+                    <div class="nav-item">
+                        @if ((bool?)ViewData["managePage"] == false)
+                        {
+                            <a asp-action="ManageRoom" asp-controller="Chat" asp-route-roomId="@ViewData["roomId"]"
+                       class="nav-link">
+                                <i class="fa-solid fa-gear"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-action="ViewRoom" asp-controller="Chat" asp-route-roomId="@ViewData["roomId"]"
+                       class="nav-link"><i class="fa-solid fa-reply"></i></a>
+                        }
+                    </div>
+                }
+                @if (Context.User.Identity?.Name != null)
+                {
+                    <a href="/Account/Logout" class="nav-link ms-auto">Log out</a>
+                }
+            </div>
         </div>
     </div>
 
