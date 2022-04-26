@@ -10,6 +10,7 @@ public class AccountController : Controller
         _signInManager = signInManager;
     }
 
+    [HttpGet]
     public IActionResult Login()
     {
         return HttpContext.User.Identity?.Name == null ? View() : Redirect("/");

@@ -1,4 +1,3 @@
-global using taChat.App.Controllers;
 global using taChat.App.Models;
 global using taChat.App.Models.ViewModels;
 global using taChat.App.Repository;
