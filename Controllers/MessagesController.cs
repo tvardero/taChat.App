@@ -55,7 +55,8 @@ public class MessagesController : Controller
                 text = message.Text,
                 sender = message.Sender.UserName,
                 senderId = message.SenderId,
-                edited = message.WasEdited
+                edited = message.WasEdited,
+                messageId = message.Id
             };
 
             // BUG! Exclude people that are deafen

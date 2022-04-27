@@ -15,18 +15,19 @@
 				@if (message.SenderId == @Model.CurrentUserId)
 				{
 					<div class="message message-my align-self-end d-flex flex-column text-white position-relative"
-				 style="max-width:600px;min-width:100px">
+			 style="max-width:600px;min-width:100px">
 						<div class="show-on-hover">
-							<form class="d-flex flex-row gap-1 position-absolute top-0 start-0 translate-middle" style="margin-left:40px"
-							method="post" asp-controller="Chat">
+							<form class="d-flex flex-row gap-1 position-absolute top-0 start-0 translate-middle"
+					  style="margin-left:40px" method="post" asp-controller="Chat">
 								<input hidden name="messageId" value="@message.Id" />
 								<input hidden name="roomId" value="@Model.Room.Id" />
 								<button asp-action="DeleteMessage" type="submit" class="btn btn-link text-info p-1"
-									style="--bs-text-opacity: .5">
+							style="--bs-text-opacity: .5">
 									<i class="fa-solid fa-trash"></i>
 								</button>
-								<a asp-action="EditMessage" type="submit" class="btn btn-link text-info p-1" asp-route-roomId="@Model.Room.Id"
-						 asp-route-messageId="@message.Id" style="--bs-text-opacity: .5">
+								<a asp-action="EditMessage" type="submit" class="btn btn-link text-info p-1"
+					   asp-route-roomId="@Model.Room.Id" asp-route-messageId="@message.Id"
+					   style="--bs-text-opacity: .5">
 									<i class="fa-solid fa-pen"></i>
 								</a>
 							</form>
@@ -44,16 +45,16 @@
 				else if (canRead)
 				{
 					<div class="message d-flex flex-column bg-dark text-white position-relative"
-				 style="max-width:600px;min-width:100px">
+			 style="max-width:600px;min-width:100px">
 						@if (canDeleteSomeonesMessage)
 						{
 							<div class="show-on-hover">
 								<form class="d-flex flex-row-reverse gap-1 position-absolute top-0 start-100 translate-middle"
-							style="padding-right:50px" method="post" asp-controller="Chat">
+					  style="padding-right:50px" method="post" asp-controller="Chat">
 									<input hidden name="messageId" value="@message.Id" />
 									<input hidden name="roomId" value="@Model.Room.Id" />
 									<button asp-action="DeleteMessage" type="submit" class="btn btn-link text-info p-1"
-									style="--bs-text-opacity: .5">
+							style="--bs-text-opacity: .5">
 										<i class="fa-solid fa-trash"></i>
 									</button>
 								</form>
@@ -86,9 +87,20 @@
 <script>
 	var roomId = @(Model.Room?.Id ?? 0);
 	var isEdit = @(((bool?)TempData["edit"] == true).ToString().ToLower());
-	var myId = "@(Model.CurrentUserId)";
+	var editingMessageId = @(TempData["editMessageId"] ?? 0);
+	var myId = "@Model.CurrentUserId";
+	var canDeleteSomeonesMessage = @(canDeleteSomeonesMessage.ToString().ToLower());
 
 	if (roomId > 0) {
+		var textInput = document.getElementById("chat-input-textarea");
+		var textForm = document.getElementById("chat-input-form");
+		textInput.addEventListener("keydown", (event) => {
+			if (event.key == "Enter" && event.shiftKey == false && event.altKey == false) {
+				event.preventDefault();
+				sendMessage();
+			}
+		});
+
 		var connection = new signalR.HubConnectionBuilder()
 			.withUrl("/MessagesHub")
 			.build();
@@ -113,17 +125,26 @@
 			})
 			.catch(err => console.error(err));
 
-		var sendMessage = function (event) {
+		var onFormSubmit = function (event) {
 			event.preventDefault();
+			sendMessage();
+		}
+
+		var sendMessage = function () {
 
 			let xhr = new XMLHttpRequest();
-			xhr.open('post', 'Messages/SendMessage');
 
-			let form = event.target;
-			let formData = new FormData(form);
+			let formData = new FormData(textForm);
+			if (isEdit) {
+				formData.append("messageId", editingMessageId)
+				xhr.open('post', 'Chat/EditMessage');
+			}
+			else {
+				xhr.open('post', 'Messages/SendMessage');
+			}
 			xhr.send(formData);
 
-			form.reset();
+			textForm.reset();
 		}
 
 		var chatMessagesDiv = document.getElementById("chat-messages");
@@ -141,7 +162,52 @@
 			messageDiv.style.maxWidth = 600 + "px";
 			messageDiv.style.minWidth = 100 + "px";
 
-			let messageActionsDiv = document.createElement("div");
+			if (myMessage || canDeleteSomeonesMessage) {
+				let messageHiddenActionsDiv = document.createElement("div");
+				messageHiddenActionsDiv.classList.add("show-on-hover");
+
+				let messageHiddenActionsForm = document.createElement("form");
+				if (myMessage) {
+					messageHiddenActionsForm.classList.add("d-flex", "flex-row", "gap-1", "position-absolute", "top-0", "start-0", "translate-middle");
+					messageHiddenActionsForm.style.marginLeft = 40 + "px";
+				}
+				else {
+					messageHiddenActionsForm.classList.add("d-flex", "flex-row-reverse", "gap-1", "position-absolute", "top-0", "start-100", "translate-middle");
+					messageHiddenActionsForm.style.paddingRight = 50 + "px";
+				}
+				messageHiddenActionsForm.method = "post";
+
+				let formInputMessageId = document.createElement("input");
+				formInputMessageId.name = "messageId";
+				formInputMessageId.hidden = true;
+				formInputMessageId.setAttribute("value", data.messageId);
+				messageHiddenActionsForm.appendChild(formInputMessageId);
+
+				let formInputRoomId = document.createElement("input");
+				formInputRoomId.name = "roomId";
+				formInputRoomId.hidden = true;
+				formInputRoomId.setAttribute("value", roomId);
+				messageHiddenActionsForm.appendChild(formInputRoomId);
+
+				let messageDeleteButton = document.createElement("button");
+				messageDeleteButton.classList.add("btn", "btn-link", "text-info", "p-1");
+				messageDeleteButton.style.cssText = "--bs-text-opacity: .5";
+				messageDeleteButton.innerHTML = '<i class="fa-solid fa-trash"></i>';
+				messageDeleteButton.formAction = "Chat/DeleteMessage"
+				messageHiddenActionsForm.appendChild(messageDeleteButton);
+
+				if (myMessage) {
+					let messageEditButton = document.createElement("a");
+					messageEditButton.classList.add("btn", "btn-link", "text-info", "p-1");
+					messageEditButton.style.cssText = "--bs-text-opacity: .5";
+					messageEditButton.innerHTML = '<i class="fa-solid fa-pen"></i>';
+					messageEditButton.href = "Chat/EditMessage?roomId=" + roomId + "&messageId=" + data.messageId;
+					messageHiddenActionsForm.appendChild(messageEditButton);
+				}
+
+				messageHiddenActionsDiv.appendChild(messageHiddenActionsForm);
+				messageDiv.appendChild(messageHiddenActionsDiv);
+			}
 
 			if (!myMessage) {
 				let messageSenderSpan = document.createElement("span");
