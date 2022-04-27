@@ -9,3 +9,11 @@
     @RenderBody()
 
 </main>
+
+@section scripts
+{
+<script src="~/lib/axios/dist/axios.min.js"></script>
+<script src="~/lib/@@microsoft/signalr/dist/browser/signalr.min.js"></script>
+
+@RenderSection("scripts", false)
+}

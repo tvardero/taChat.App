@@ -4,6 +4,7 @@ global using taChat.App.Repository;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using taChat.App.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,8 @@ builder.Services.AddIdentity<User, IdentityRole>(o =>
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddSignalR();
 
 builder.Services.AddMvc();
 
@@ -42,6 +45,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHub<MessagesHub>("/MessagesHub");
 
 app.MapControllerRoute(
     name: null!,

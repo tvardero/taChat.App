@@ -1,23 +1,24 @@
 @model ulong
 
-<form method="post" id="chat-input-form" class="m-2 pt-3 d-flex flex-row align-items-center gap-2">
-    <textarea name="text" id="chat-input-textarea" placeholder="Write text here..." rows="1"
-              class="flex-grow-1 form-control bg-dark text-white">@TempData["editMessageText"]</textarea>
+<form method="post" onsubmit="sendMessage(event)" id="chat-input-form"
+			class="m-2 pt-3 d-flex flex-row align-items-center gap-2">
+	<textarea name="text" id="chat-input-textarea" placeholder="Write text here..." rows="1"
+						class="flex-grow-1 form-control bg-dark text-white">@TempData["editMessageText"]</textarea>
 
-    <input hidden name="roomId" value="@Model" />
-    @if ((bool?)TempData["edit"] == true)
-    {
-        <input hidden name="messageId" value="@TempData["editMessageId"]" />
-        <button asp-action="EditMessage" asp-controller="Chat" type="submit"
-            class="align-self-end fs-3 text-info btn btn-link" style="--bs-text-opacity: .75;min-height:52px">
-            <i class="fa-solid fa-paper-plane"></i>
-        </button>
-    }
-    else
-    {
-        <button asp-action="SendMessage" asp-controller="Chat" type="submit"
-            class="align-self-end fs-3 text-info btn btn-link" style="--bs-text-opacity: .75;min-height:52px">
-            <i class="fa-solid fa-paper-plane"></i>
-        </button>
-    }
+	<input hidden name="roomId" value="@Model" />
+	@if ((bool?)TempData["edit"] == true)
+	{
+		<input hidden name="messageId" value="@TempData["editMessageId"]" />
+		<button asp-controller="Messages" asp-action="EditMessage" type="submit"
+					class="align-self-end fs-3 text-info btn btn-link" style="--bs-text-opacity: .75;min-height:52px">
+			<i class="fa-solid fa-paper-plane"></i>
+		</button>
+	}
+	else
+	{
+		<button asp-controller="Messages" asp-action="SendMessage" type="submit"
+					class="align-self-end fs-3 text-info btn btn-link" style="--bs-text-opacity: .75;min-height:52px">
+			<i class="fa-solid fa-paper-plane"></i>
+		</button>
+	}
 </form>

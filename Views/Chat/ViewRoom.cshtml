@@ -80,3 +80,92 @@
 		}
 	}
 </div>
+
+@section scripts
+{
+<script>
+	var roomId = @(Model.Room?.Id ?? 0);
+	var isEdit = @(((bool?)TempData["edit"] == true).ToString().ToLower());
+	var myId = "@(Model.CurrentUserId)";
+
+	if (roomId > 0) {
+		var connection = new signalR.HubConnectionBuilder()
+			.withUrl("/MessagesHub")
+			.build();
+
+		connection.on("getMessage", data => getMessage(data));
+		connection.on("updatePage", () => { window.location.reload() });
+
+		var _connectionId = "";
+
+		var joinRoom = function () {
+			let url = "/Messages/JoinRoom?connectionId=" + _connectionId + "&roomId=" + roomId;
+			axios.post(url, null);
+		}
+
+		connection.start()
+			.then(function () {
+				connection.invoke("getConnectionId")
+					.then(function (connectionId) {
+						_connectionId = connectionId;
+						joinRoom();
+					});
+			})
+			.catch(err => console.error(err));
+
+		var sendMessage = function (event) {
+			event.preventDefault();
+
+			let xhr = new XMLHttpRequest();
+			xhr.open('post', 'Messages/SendMessage');
+
+			let form = event.target;
+			let formData = new FormData(form);
+			xhr.send(formData);
+
+			form.reset();
+		}
+
+		var chatMessagesDiv = document.getElementById("chat-messages");
+		var getMessage = function (data) {
+			@* let wasAtBottom = (document.documentElement.scrollTop || document.body.scrollTop) > (0.95 * chatMessagesDiv.scrollHeight); *@
+				let wasAtBottom = true;
+			let myMessage = data.senderId == myId;
+
+			let messageDiv = document.createElement("div");
+			messageDiv.classList.add("message", "d-flex", "flex-column", "text-white", "position-relative");
+			if (myMessage) { messageDiv.classList.add("message-my", "align-self-end"); }
+			else {
+				messageDiv.classList.add("bg-dark");
+			}
+			messageDiv.style.maxWidth = 600 + "px";
+			messageDiv.style.minWidth = 100 + "px";
+
+			let messageActionsDiv = document.createElement("div");
+
+			if (!myMessage) {
+				let messageSenderSpan = document.createElement("span");
+				messageSenderSpan.classList.add("text-info", "fw-bold");
+				messageSenderSpan.style.cssText = "--bs-text-opacity:.75";
+				messageSenderSpan.innerText = data.sender;
+				messageDiv.appendChild(messageSenderSpan);
+			}
+
+			let messageTextSpan = document.createElement("span");
+			messageTextSpan.classList.add("text-break");
+			messageTextSpan.innerText = data.text;
+			messageDiv.appendChild(messageTextSpan);
+
+			let messageTimeSpan = document.createElement("span");
+			messageTimeSpan.classList.add("text-info", "align-self-end");
+			messageTimeSpan.style.cssText = "--bs-text-opacity:.5;font-size:small";
+			messageTimeSpan.innerText = data.wasEdited ? "edit. " + data.time : data.time;
+
+			messageDiv.appendChild(messageTimeSpan);
+
+			chatMessagesDiv.appendChild(messageDiv);
+			if (wasAtBottom) { chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight; }
+		}
+	}
+</script>
+}

@@ -1,27 +1,31 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using taChat.App.Hubs;
 
 namespace taChat.App.Controllers;
 
 [Authorize]
 public class ChatController : Controller
 {
-    public ChatController(ApplicationDbContext context, UserManager<User> userManager)
+    public ChatController(ApplicationDbContext context, UserManager<User> userManager, IHubContext<MessagesHub> messagesHub)
     {
         _context = context;
         _userManager = userManager;
+        _messagesHub = messagesHub;
     }
 
     public async Task<IActionResult> CreateRoom(string name, bool isGroup)
     {
-        if (!string.IsNullOrEmpty(name))
+        User cu = await GetCurrentUserAsync();
+
+        if (!string.IsNullOrEmpty(name) && name != cu.UserName)
         {
             Room r = new() { Name = name, IsGroup = isGroup };
             await _context.Rooms.AddAsync(r);
 
-            User cu = await GetCurrentUserAsync();
             RoomUser ru = new() { Room = r, UserId = cu.Id, Perks = isGroup ? RoomPerks.Creator : RoomPerks.PrivateChat };
             await _context.RoomUsers.AddAsync(ru);
 
@@ -96,35 +100,6 @@ public class ChatController : Controller
         return View(model);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> SendMessage(string text, ulong roomId)
-    {
-        if (ModelState.IsValid)
-        {
-            if (await CheckCurrentUserPerkAsync(RoomPerks.Write, roomId))
-            {
-                Message message = new()
-                {
-                    Timestamp = DateTime.Now,
-                    SenderId = (await GetCurrentUserAsync()).Id,
-                    RoomId = roomId,
-                    Text = text
-                };
-
-                await _context.Messages.AddAsync(message);
-                await _context.SaveChangesAsync();
-
-                // TODO: push update for users that are currenty in this chat
-            }
-            else
-            {
-                return Forbid(); // TODO: Prettify
-            }
-        }
-
-        return RedirectToAction(nameof(ViewRoom), new { roomId });
-    }
-
     [HttpGet]
     public async Task<IActionResult> EditMessage(ulong messageId, ulong roomId)
     {
@@ -151,6 +126,8 @@ public class ChatController : Controller
             message.WasEdited = true;
 
             await _context.SaveChangesAsync();
+
+            await _messagesHub.Clients.Group($"chat{roomId}").SendAsync("updatePage"); // Make it work only on involved person, not everybody
         }
         return RedirectToAction(nameof(ViewRoom), new { roomId });
     }
@@ -163,6 +140,8 @@ public class ChatController : Controller
         {
             _context.Messages.Remove(message);
             await _context.SaveChangesAsync();
+
+            await _messagesHub.Clients.Group($"chat{roomId}").SendAsync("updatePage"); // Make it work only on involved person, not everybody
         }
         return RedirectToAction(nameof(ViewRoom), new { roomId });
     }
@@ -207,9 +186,7 @@ public class ChatController : Controller
 
             await _context.SaveChangesAsync();
 
-            // TODO: push update for rooms list of all users of this chat 
-            // TODO: push update for all  users, if they were in this chat atm
-            // TODO: push update for all users that were in manageRoom page atm
+            await _messagesHub.Clients.Group($"chat{roomId}").SendAsync("updatePage"); // Make it work only on involved person, not everybody
         }
         else
         {
@@ -248,8 +225,7 @@ public class ChatController : Controller
             _context.RoomUsers.Remove(ru);
             await _context.SaveChangesAsync();
 
-            // TODO: push update for all affected users, if they were in this chat atm
-            // TODO: push update for all users that were in manageRoom page atm
+            await _messagesHub.Clients.Group($"chat{roomId}").SendAsync("updatePage"); // Make it work only on involved person, not everybody
         }
 
         return RedirectToAction(nameof(ManageRoom), new { roomId });
@@ -271,8 +247,8 @@ public class ChatController : Controller
 
                 await _context.SaveChangesAsync();
 
-                // TODO: push update for all affected users, if they were in this chat atm
-                // TODO: push update for all users that were in manageRoom page atm
+                await _messagesHub.Clients.Group($"chat{roomId}").SendAsync("updatePage"); // Make it work only on involved person, not everybody
+
             }
         }
         else
@@ -300,8 +276,7 @@ public class ChatController : Controller
 
             await _context.SaveChangesAsync();
 
-            // TODO: push update for all affected users, if they were in this chat atm
-            // TODO: push update for all users that were in manageRoom page atm
+            await _messagesHub.Clients.Group($"chat{roomId}").SendAsync("updatePage"); // Make it work only on involved person, not everybody
         }
         else
         {
@@ -329,8 +304,7 @@ public class ChatController : Controller
 
             await _context.SaveChangesAsync();
 
-            // TODO: push update for all affected users, if they were in this chat atm
-            // TODO: push update for all users that were in manageRoom page atm
+            await _messagesHub.Clients.Group($"chat{roomId}").SendAsync("updatePage"); // Make it work only on involved person, not everybody
         }
         else
         {
@@ -372,8 +346,7 @@ public class ChatController : Controller
 
             await _context.SaveChangesAsync();
 
-            // TODO: push update for all users that were in this chat
-            // TODO: force every involved user to redirect to "/?roomId=0" if they were at the moment in this chat
+            await _messagesHub.Clients.Group($"chat{roomId}").SendAsync("updatePage");
         }
         return RedirectToAction(nameof(ViewRoom));
     }
@@ -399,7 +372,7 @@ public class ChatController : Controller
 
             await _context.SaveChangesAsync();
 
-            // TODO: push update for all users that were in manageRoom page atm
+            await _messagesHub.Clients.Group($"chat{roomId}").SendAsync("updatePage"); // Make it work only on involved person, not everybody
         }
         else
         {
@@ -418,6 +391,7 @@ public class ChatController : Controller
         return cuPerks != null && (cuPerks & perk) == perk;
     }
 
+    private readonly IHubContext<MessagesHub> _messagesHub;
     private readonly ApplicationDbContext _context;
     private readonly UserManager<User> _userManager;
 }

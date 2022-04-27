@@ -1,6 +1,8 @@
 Project was only for self education purposes.
 NO PR OR ISSUES WILL BE ACCEPTED, DO NOT CONTRIBUTE.
 
+![Finally i can do signal r](https://snipboard.io/ZQG0FI.jpg)
+
 ## About:
 
 Simple chat web app with groups and private communication.
